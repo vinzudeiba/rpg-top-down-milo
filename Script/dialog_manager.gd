@@ -21,6 +21,8 @@ func _ready() -> void:
 	tekskata.visible = false
 	# connect ke signal autoload (langsung, tanpa callable)
 	ApaAja.interaksi_changed.connect(_on_interaksi_changed)
+	# baru: connect ke UI-interact signal sehingga tombol UI bisa meng-advance dialog
+	ApaAja.ui_interact_pressed.connect(_on_ui_interact_pressed)
 
 func _on_interaksi_changed(active: bool, npc: Node):
 	if active:
@@ -37,6 +39,7 @@ func _on_interaksi_changed(active: bool, npc: Node):
 		_start_line(current_lines[current_index])
 	else:
 		_close_dialog()
+		
 func _start_line(line_text: String) -> void:
 	current_text = line_text
 	tekskata.clear()            # bersihkan buffer richtext
@@ -56,21 +59,32 @@ func _input(event: InputEvent) -> void:
 	# hanya tangani tombol E saat panel tampil
 	if not kotakhitam.visible:
 		return
+# tangani hanya action press dari input event (keyboard)
 	if event.is_action_pressed("Aksi"):
-		if is_typing:
-			# finish immediately
-			tekskata.visible_ratio = 1.0
-			is_typing = false
-			time_elapsed = total_chars * text_speed
+		_handle_interact_press()
+
+# handler terpisah: dipakai oleh _input dan juga oleh UI via ApaAja.ui_interact_pressed
+func _handle_interact_press() -> void:
+	if is_typing:
+		# finish immediately
+		tekskata.visible_ratio = 1.0
+		is_typing = false
+		time_elapsed = total_chars * text_speed
+	else:
+		# teks sudah penuh -> lanjut ke baris berikutnya atau selesai
+		current_index += 1
+		if current_index < current_lines.size():
+			_start_line(current_lines[current_index])
 		else:
-			# teks sudah penuh -> lanjut ke baris berikutnya atau selesai
-			current_index += 1
-			if current_index < current_lines.size():
-				_start_line(current_lines[current_index])
-			else:
-				# tidak ada dialog lagi -> akhiri interaksi dan hide UI
-				#_close_dialog()
-				ApaAja.end_interaksi()
+			# tidak ada dialog lagi -> akhiri interaksi dan hide UI
+			ApaAja.end_interaksi()
+
+# baru: handler untuk UI "E" yang memanggil ApaAja.ui_interact()
+func _on_ui_interact_pressed() -> void:
+	# UI request hanya valid jika kotak dialog sedang ditampilkan
+	if not kotakhitam.visible:
+		return
+	_handle_interact_press()
 
 func _process(delta: float) -> void:
 	# jika sedang mengetik, maju tipe berdasarkan seconds-per-char

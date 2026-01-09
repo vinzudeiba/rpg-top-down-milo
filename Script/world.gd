@@ -37,5 +37,4 @@ func _on_r_button_up() -> void:
 	
 #E button
 func _on_e_pressed() -> void:
-	Input.action_press("Aksi")
-	Input.action_release("Aksi")
+	ApaAja.ui_interact()
