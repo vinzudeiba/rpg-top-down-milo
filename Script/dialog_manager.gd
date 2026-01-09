@@ -51,6 +51,8 @@ func _on_interaksi_changed(active: bool, npc: Node):
 			return
 
 		_start_line(current_lines[current_index])
+		# set waktu buka supaya kita ignore kemungkinan press yang sama yang membuka dialog
+		_opened_at = OS.get_unix_time_msec() / 1000.0
 	else:
 		_close_dialog()
 		
@@ -116,13 +118,23 @@ func _process(delta: float) -> void:
 			is_typing = false
 			tekskata.visible_ratio = 1.0
 
+	# Poll physical key juga di _process agar tidak tergantung pada event propagation
+	if kotakhitam.visible:
+		# ignore press yang sama yang membuka dialog dalam jangka waktu sangat singkat
+		var now = OS.get_unix_time_msec() / 1000.0
+		if Input.is_action_just_pressed("Aksi") and (now - _opened_at) > _open_debounce_time:
+			_handle_interact_press()
+
 func _close_dialog() -> void:
 	kotakhitam.hide()
 	tekskata.hide()
 	tekskata.clear()
+	# hanya clear salinan current_lines, jangan memodifikasi dialog_data
 	current_lines.clear()
 	current_index = 0
 	current_text = ""
 	time_elapsed = 0.0
 	is_typing = false
 	total_chars = 0
+	# reset open timestamp
+	_opened_at = -1.0
