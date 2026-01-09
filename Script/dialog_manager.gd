@@ -69,7 +69,7 @@ func _input(event: InputEvent) -> void:
 				_start_line(current_lines[current_index])
 			else:
 				# tidak ada dialog lagi -> akhiri interaksi dan hide UI
-				_close_dialog()
+				#_close_dialog()
 				ApaAja.end_interaksi()
 
 func _process(delta: float) -> void:
