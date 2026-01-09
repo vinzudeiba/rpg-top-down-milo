@@ -1,0 +1,124 @@
+[gd_scene load_steps=19 format=3 uid="uid://cj5si8iyud7u0"]
+
+[ext_resource type="Texture2D" uid="uid://cxu4jdxo8w7nb" path="res://Sprite/bgr.jpg" id="1_dlwip"]
+[ext_resource type="PackedScene" uid="uid://h1q8ahk6h73n" path="res://Scene/player.tscn" id="1_emx41"]
+[ext_resource type="Script" uid="uid://dlm218bybdiiq" path="res://Scene/world.gd" id="1_y56vo"]
+[ext_resource type="Texture2D" uid="uid://ccl4tfnjmhtw0" path="res://Sprite/rumah.png" id="2_ejll3"]
+[ext_resource type="Texture2D" uid="uid://cm66nlksfno1h" path="res://Sprite/kolam.png" id="3_ddf65"]
+[ext_resource type="Texture2D" uid="uid://b4wpx5i5pb1mk" path="res://Sprite/kotak pos.png" id="4_h7cfj"]
+[ext_resource type="Texture2D" uid="uid://dpvgfijmpvmp" path="res://Sprite/kursi.png" id="5_y56vo"]
+[ext_resource type="Texture2D" uid="uid://bf7yiy5qb81fx" path="res://Sprite/pohon.png" id="6_6a5p4"]
+[ext_resource type="PackedScene" uid="uid://cmlny3l2upckx" path="res://Scene/duck.tscn" id="9_6a5p4"]
+[ext_resource type="FontFile" uid="uid://bhv6fvfxcf2qt" path="res://LGGothic.ttf" id="9_y56vo"]
+[ext_resource type="StyleBox" uid="uid://cwdvppka7wjsb" path="res://Style/new_style_box_flat.tres" id="11_6a5p4"]
+[ext_resource type="Script" uid="uid://bdiooov6sejms" path="res://Scene/dialog_manager.gd" id="12_nka0b"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_scul4"]
+texture = ExtResource("2_ejll3")
+texture_region_size = Vector2i(1166, 1082)
+0:0/0 = 0
+0:0/0/y_sort_origin = 457
+0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-499.01, 470.764, -527.256, -552.364, 486.456, -549.225, 495.872, 455.072, 426.826, 451.934, 229.105, 448.795, 232.244, 546.087, 175.752, 542.948, 160.06, 451.934, -229.105, 455.072, -238.521, 542.948, -282.459, 533.533, -282.459, 458.211)
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_0gfnl"]
+texture = ExtResource("3_ddf65")
+texture_region_size = Vector2i(580, 327)
+0:0/0 = 0
+0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(161, 152, 0, 164, -116, 159, -143, 146, -177, 132, -192, 106, -251, 76, -260, 62, -255, 21, -272, 2, -293, -22, -274.592, -46.0606, -235, -56, -214, -65, -248, -111, -211, -127, -145, -154, -75, -169, 8, -153, 43, -144, 98, -147, 130, -134, 174, -129, 239, -101, 218, -72, 234, -53, 267, -36, 297, 3, 267, 38, 215, 70, 242, 77, 256, 92, 258, 132, 196, 140)
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_kufhj"]
+texture = ExtResource("4_h7cfj")
+texture_region_size = Vector2i(76, 203)
+0:0/0 = 0
+0:0/0/y_sort_origin = 85
+0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-47.8322, 109.837, -47.8322, 40.7459, 47.8322, 37.2028, 46.0606, 109.837)
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_a6mvv"]
+texture = ExtResource("5_y56vo")
+texture_region_size = Vector2i(423, 251)
+0:0/0 = 0
+0:0/0/y_sort_origin = 105
+0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(214.359, 15.944, 215, 132, -3, 134, -215, 133, -217, 29, -196.643, -37.2028, 187.786, -38.9744)
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_s81y4"]
+texture = ExtResource("6_6a5p4")
+texture_region_size = Vector2i(998, 850)
+0:0/0 = 0
+0:0/0/y_sort_origin = 420
+0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(182.029, 360.919, 210.275, 445.657, 15.6921, 448.795, -169.475, 451.934, -166.337, 370.335, -128.676, 257.351, 141.229, 263.628)
+
+[sub_resource type="TileSet" id="TileSet_dlwip"]
+physics_layer_0/collision_layer = 1
+sources/1 = SubResource("TileSetAtlasSource_scul4")
+sources/2 = SubResource("TileSetAtlasSource_0gfnl")
+sources/3 = SubResource("TileSetAtlasSource_kufhj")
+sources/4 = SubResource("TileSetAtlasSource_a6mvv")
+sources/5 = SubResource("TileSetAtlasSource_s81y4")
+
+[node name="World" type="Node2D"]
+y_sort_enabled = true
+position = Vector2(630, 365)
+script = ExtResource("1_y56vo")
+
+[node name="Background2" type="Sprite2D" parent="."]
+y_sort_enabled = true
+position = Vector2(0, -1)
+scale = Vector2(0.35, 0.35)
+texture = ExtResource("1_dlwip")
+
+[node name="TileMap" type="TileMap" parent="."]
+y_sort_enabled = true
+scale = Vector2(0.35, 0.35)
+tile_set = SubResource("TileSet_dlwip")
+format = 2
+layer_0/y_sort_enabled = true
+layer_0/z_index = 1
+layer_0/tile_data = PackedInt32Array(1507346, 4, 0, 1572843, 3, 0, -2031652, 1, 0, -2555863, 5, 0, -1507247, 2, 0, -327615, 6, 0)
+
+[node name="Player" parent="." instance=ExtResource("1_emx41")]
+z_index = 1
+y_sort_enabled = false
+scale = Vector2(0.25, 0.25)
+
+[node name="Duck" parent="." instance=ExtResource("9_6a5p4")]
+z_index = 1
+y_sort_enabled = true
+position = Vector2(367, -24)
+scale = Vector2(0.35, 0.35)
+
+[node name="ExitButton" type="Button" parent="."]
+z_index = 2
+y_sort_enabled = true
+texture_filter = 1
+offset_left = -606.0
+offset_top = -334.0
+offset_right = -450.0
+offset_bottom = -268.0
+theme_override_colors/font_hover_pressed_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("9_y56vo")
+theme_override_font_sizes/font_size = 36
+theme_override_styles/hover = ExtResource("11_6a5p4")
+theme_override_styles/pressed = ExtResource("11_6a5p4")
+theme_override_styles/normal = ExtResource("11_6a5p4")
+text = "Exit"
+
+[node name="DialogManager" type="CanvasLayer" parent="."]
+layer = 2
+script = ExtResource("12_nka0b")
+
+[node name="DialogPanel" type="Panel" parent="DialogManager"]
+offset_left = 40.0
+offset_top = 531.0
+offset_right = 1212.0
+offset_bottom = 680.0
+theme_override_styles/panel = ExtResource("11_6a5p4")
+
+[node name="RichTextLabel" type="RichTextLabel" parent="DialogManager"]
+offset_left = 56.0
+offset_top = 544.0
+offset_right = 1200.0
+offset_bottom = 664.0
+
+[connection signal="pressed" from="ExitButton" to="." method="_on_exit_button_pressed"]

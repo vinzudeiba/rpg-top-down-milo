@@ -1,0 +1,49 @@
+[gd_scene load_steps=7 format=3 uid="uid://cmlny3l2upckx"]
+
+[ext_resource type="Texture2D" uid="uid://dpiorfhmebgbu" path="res://Sprite/bebek.png" id="1_k0rew"]
+[ext_resource type="Script" path="res://Script/duck.gd" id="1_qs2bw"]
+[ext_resource type="FontFile" uid="uid://bhv6fvfxcf2qt" path="res://LGGothic.ttf" id="2_xijd4"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_xijd4"]
+size = Vector2(129, 68)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_qs2bw"]
+size = Vector2(126, 114)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qs2bw"]
+bg_color = Color(0, 0, 0, 1)
+
+[node name="Duck" type="Node2D"]
+script = ExtResource("1_qs2bw")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_k0rew")
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+position = Vector2(-1.5, 109)
+shape = SubResource("RectangleShape2D_xijd4")
+
+[node name="StaticBody2D" type="StaticBody2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]
+position = Vector2(0, 43)
+shape = SubResource("RectangleShape2D_qs2bw")
+
+[node name="Label" type="Label" parent="."]
+visible = false
+z_index = 1
+y_sort_enabled = true
+offset_left = -148.0
+offset_top = -366.0
+offset_right = 148.0
+offset_bottom = -280.0
+pivot_offset = Vector2(147, 467)
+theme_override_fonts/font = ExtResource("2_xijd4")
+theme_override_font_sizes/font_size = 41
+theme_override_styles/normal = SubResource("StyleBoxFlat_qs2bw")
+text = "Press \"E\""
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3

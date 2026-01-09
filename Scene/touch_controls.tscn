@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3 uid="uid://b3rn8r1kpyy28"]
+
+[ext_resource type="Texture2D" uid="uid://mubg0fek2ib5" path="res://addons/touch_screen_joystick/asset_icon.png" id="1_faa75"]
+[ext_resource type="Script" uid="uid://bukcf2b3xp67d" path="res://addons/touch_screen_joystick/touch_screen_joystick.gd" id="2_p0p7d"]
+
+[node name="TouchControls" type="CanvasLayer"]
+script = ExtResource("2_p0p7d")
+
+[node name="AssetIcon" type="Sprite2D" parent="."]
+position = Vector2(172, 334)
+scale = Vector2(0.29, 0.29)
+texture = ExtResource("1_faa75")

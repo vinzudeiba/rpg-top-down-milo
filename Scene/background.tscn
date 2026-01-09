@@ -1,0 +1,15 @@
+[gd_scene load_steps=2 format=3 uid="uid://bxl1j1vuu3btn"]
+
+[ext_resource type="Texture2D" uid="uid://cxu4jdxo8w7nb" path="res://Sprite/bgr.jpg" id="1_3w1m4"]
+
+[node name="Background" type="Sprite2D"]
+scale = Vector2(0.35, 0.35)
+texture = ExtResource("1_3w1m4")
+
+[node name="StaticBody2D" type="StaticBody2D" parent="."]
+z_index = 1
+y_sort_enabled = true
+collision_layer = 2
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="StaticBody2D"]
+polygon = PackedVector2Array(-5.71429, -1031.43, 1785.71, -1031.43, 1788.57, 1031.43, -1794.29, 1031.43, -1791.43, -1031.43, -42.8571, -1031.43, -45.7143, -1102.86, -1922.86, -1337.14, -1982.86, 1145.71, 1954.29, 1251.43, 2040, -751.429, 1225.71, -1694.29, -42.8571, -1034.29)
