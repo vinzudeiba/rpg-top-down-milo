@@ -38,10 +38,8 @@ func _physics_process(_delta: float) -> void:
 	move_and_slide()
 
 	# tangani interaksi E: hanya jika tidak sedang interaksi global
-	#if Input.is_action_just_pressed("Aksi"):
-		#if current_npc != null and not ApaAja.is_interacting:
-			#ApaAja.start_interaksi(current_npc)
 	if Input.is_action_just_pressed("Aksi") and not ApaAja.is_interacting:
+		print("[Player] physical Aksi just pressed; current_npc=", current_npc)
 		if current_npc:
 			ApaAja.start_interaksi(current_npc)
 
@@ -98,23 +96,6 @@ func _handle_movement_input() -> void:
 		_play_continuous_anim()
 	elif not is_moving:
 		_play_idle_for_dir()
-
-# coba mulai interaksi: cari Area2D (child Duck) pada posisi player
-#func _try_start_interaction() -> void:
-	#var space_state = get_world_2d().direct_space_state
-	## cek pada titik player; argumen kedua = max_results (kecilkan bila perlu),
-	## argumen terakhir true,true agar juga mendeteksi Area2D.
-	#var results = space_state.intersect_point(global_position, 16, [], 0x7fffffff, true, true)
-	#for r in results:
-		#if not r.has("collider"):
-			#continue
-		#var col = r["collider"]
-		## cek bila collider adalah Area2D child dari Duck
-		#if col is Area2D and col.get_parent() and col.get_parent().name == "Duck":
-			## mulai interaksi via singleton
-			#ApaAja.start_interaksi(col.get_parent())
-			#return
-	## jika tidak ada npc -> do nothing (sesuai spesifikasi)
 
 # helper untuk memeriksa apakah ada just_pressed aktif (agar tidak override step)
 func _any_just_pressed() -> bool:
@@ -188,6 +169,11 @@ func _on_interaksi_changed(active: bool, _npc: Node):
 	
 func set_near_npc(npc: Node):
 	current_npc = npc
+	# penting: juga simpan ke singleton agar UI (yang langsung panggil ApaAja.ui_interact) tahu NPC kandidat
+	ApaAja.current_npc = npc
+	print("[Player] set_near_npc -> current_npc=", npc)
 
 func clear_near_npc():
 	current_npc = null
+	ApaAja.current_npc = null
+	print("[Player] clear_near_npc()")

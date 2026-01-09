@@ -16,6 +16,10 @@ var time_elapsed: float = 0.0
 var is_typing: bool = false   # true = sedang mengetik huruf demi huruf
 var total_chars: int = 0
 
+# debounce untuk menghindari press yang sama (yang membuka dialog) langsung dianggap advance
+var _open_debounce_time: float = 0.12
+var _opened_at: float = -1.0
+
 func _ready() -> void:
 	kotakhitam.visible = false
 	tekskata.visible = false
@@ -23,16 +27,26 @@ func _ready() -> void:
 	ApaAja.interaksi_changed.connect(_on_interaksi_changed)
 	# baru: connect ke UI-interact signal sehingga tombol UI bisa meng-advance dialog
 	ApaAja.ui_interact_pressed.connect(_on_ui_interact_pressed)
+	print("[DialogManager] ready; connected to ApaAja signals")
 
 func _on_interaksi_changed(active: bool, npc: Node):
+	print("[DialogManager] interaksi_changed:", active, " npc=", npc)	# safety: jika active true tapi npc null -> log & abort
+	if active and npc == null:
+		print("[DialogManager] WARNING: interaksi_changed active but npc is null")
+		return
+		
 	if active:
 		kotakhitam.show()
 		tekskata.show()
 
-		current_lines = dialog_data.get(npc.name, [])
+		var npc_name = str(npc.name)
+		print("[DialogManager] npc.name='", npc_name, "'; dialog_data.has=", dialog_data.has(npc_name))
+		current_lines = dialog_data.get(npc.name, []).duplicate()
 		current_index = 0
-
+		
+		print("[DialogManager] current_lines.size=", current_lines.size())
 		if current_lines.is_empty():
+			print("[DialogManager] no dialog lines found for", npc_name, " -> ending interaksi")
 			ApaAja.end_interaksi()
 			return
 
@@ -81,6 +95,7 @@ func _handle_interact_press() -> void:
 
 # baru: handler untuk UI "E" yang memanggil ApaAja.ui_interact()
 func _on_ui_interact_pressed() -> void:
+	print("[DialogManager] ui_interact_pressed received; kotak visible=", kotakhitam.visible, " is_typing=", is_typing)
 	# UI request hanya valid jika kotak dialog sedang ditampilkan
 	if not kotakhitam.visible:
 		return

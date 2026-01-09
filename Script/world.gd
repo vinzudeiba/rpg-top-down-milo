@@ -37,4 +37,5 @@ func _on_r_button_up() -> void:
 	
 #E button
 func _on_e_pressed() -> void:
+	print("[world] UI E pressed")
 	ApaAja.ui_interact()
