@@ -37,8 +37,9 @@ func _on_r_button_up() -> void:
 	
 #E button
 func _on_e_pressed() -> void:
-	#var input := InputEventAction.new()
-	#input.action = "Aksi"
-	#input.pressed = true
+	var input := InputEventAction.new()
+	input.action = "Aksi"
+	input.pressed = true
+	Input.parse_input_event(input)
 	Input.action_press("Aksi")
 	Input.action_release("Aksi")
