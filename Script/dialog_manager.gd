@@ -1,6 +1,6 @@
 extends CanvasLayer
 
-@export var text_speed: float = 0.03  # seconds per character (lebih kecil = lebih cepat)
+@export var text_speed: float = 0.05  # seconds per character (lebih kecil = lebih cepat)
 @onready var kotakhitam = $DialogPanel
 @onready var tekskata = $RichTextLabel
 
@@ -15,10 +15,6 @@ var current_text: String = ""
 var time_elapsed: float = 0.0
 var is_typing: bool = false   # true = sedang mengetik huruf demi huruf
 var total_chars: int = 0
-
-# debounce untuk menghindari press yang sama (yang membuka dialog) langsung dianggap advance
-var _open_debounce_time: float = 0.12
-var _opened_at: float = -1.0
 
 func _ready() -> void:
 	kotakhitam.visible = false
@@ -41,7 +37,7 @@ func _on_interaksi_changed(active: bool, npc: Node):
 
 		var npc_name = str(npc.name)
 		print("[DialogManager] npc.name='", npc_name, "'; dialog_data.has=", dialog_data.has(npc_name))
-		current_lines = dialog_data.get(npc.name, []).duplicate()
+		current_lines = dialog_data.get(npc_name, []).duplicate()
 		current_index = 0
 		
 		print("[DialogManager] current_lines.size=", current_lines.size())
@@ -51,8 +47,6 @@ func _on_interaksi_changed(active: bool, npc: Node):
 			return
 
 		_start_line(current_lines[current_index])
-		# set waktu buka supaya kita ignore kemungkinan press yang sama yang membuka dialog
-		_opened_at = OS.get_unix_time_msec() / 1000.0
 	else:
 		_close_dialog()
 		
@@ -117,14 +111,7 @@ func _process(delta: float) -> void:
 		if chars_shown >= total_chars:
 			is_typing = false
 			tekskata.visible_ratio = 1.0
-
-	# Poll physical key juga di _process agar tidak tergantung pada event propagation
-	if kotakhitam.visible:
-		# ignore press yang sama yang membuka dialog dalam jangka waktu sangat singkat
-		var now = OS.get_unix_time_msec() / 1000.0
-		if Input.is_action_just_pressed("Aksi") and (now - _opened_at) > _open_debounce_time:
-			_handle_interact_press()
-
+			
 func _close_dialog() -> void:
 	kotakhitam.hide()
 	tekskata.hide()
@@ -136,5 +123,3 @@ func _close_dialog() -> void:
 	time_elapsed = 0.0
 	is_typing = false
 	total_chars = 0
-	# reset open timestamp
-	_opened_at = -1.0

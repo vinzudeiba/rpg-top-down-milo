@@ -38,10 +38,14 @@ func _physics_process(_delta: float) -> void:
 	move_and_slide()
 
 	# tangani interaksi E: hanya jika tidak sedang interaksi global
-	if Input.is_action_just_pressed("Aksi") and not ApaAja.is_interacting:
-		print("[Player] physical Aksi just pressed; current_npc=", current_npc)
-		if current_npc:
-			ApaAja.start_interaksi(current_npc)
+	#if Input.is_action_just_pressed("Aksi") and not ApaAja.is_interacting:
+		#print("[Player] physical Aksi just pressed; current_npc=", current_npc)
+		#if current_npc:
+			#ApaAja.start_interaksi(current_npc)
+	
+	if Input.is_action_just_pressed("Aksi"):
+	# Kirim semua input 'E' lewat signal bus supaya perilaku konsisten
+		ApaAja.ui_interact()
 
 # movement input handling: gabungan "step" (just_pressed) dan hold (continuous)
 func _handle_movement_input() -> void:
