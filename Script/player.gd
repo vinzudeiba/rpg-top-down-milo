@@ -45,7 +45,7 @@ func _physics_process(_delta: float) -> void:
 	
 	if Input.is_action_just_pressed("Aksi"):
 	# Kirim semua input 'E' lewat signal bus supaya perilaku konsisten
-		ApaAja.ui_interact()
+		ApaAja.ui_interact("key")
 
 # movement input handling: gabungan "step" (just_pressed) dan hold (continuous)
 func _handle_movement_input() -> void:
