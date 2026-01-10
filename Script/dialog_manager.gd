@@ -1,6 +1,6 @@
 extends CanvasLayer
 
-@export var text_speed: float = 0.05  # seconds per character (lebih kecil = lebih cepat)
+@export var text_speed: float = 0.1  # seconds per character (lebih kecil = lebih cepat)
 @onready var kotakhitam = $DialogPanel
 @onready var tekskata = $RichTextLabel
 
@@ -15,6 +15,9 @@ var current_text: String = ""
 var time_elapsed: float = 0.0
 var is_typing: bool = false   # true = sedang mengetik huruf demi huruf
 var total_chars: int = 0
+
+# local flag: ignore exactly one advance press right after opening dialog
+var _ignore_next_press: bool = false
 
 func _ready() -> void:
 	kotakhitam.visible = false
@@ -36,17 +39,21 @@ func _on_interaksi_changed(active: bool, npc: Node):
 		tekskata.show()
 
 		var npc_name = str(npc.name)
-		print("[DialogManager] npc.name='", npc_name, "'; dialog_data.has=", dialog_data.has(npc_name))
 		current_lines = dialog_data.get(npc_name, []).duplicate()
 		current_index = 0
 		
-		print("[DialogManager] current_lines.size=", current_lines.size())
+		print("[DialogManager] npc.name='", npc_name, "'; current_lines.size=", current_lines.size())
+		
 		if current_lines.is_empty():
-			print("[DialogManager] no dialog lines found for", npc_name, " -> ending interaksi")
 			ApaAja.end_interaksi()
 			return
 
 		_start_line(current_lines[current_index])
+		
+		# jika ApaAja.just_started true -> kita ignore satu press berikutnya
+		_ignore_next_press = ApaAja.just_started
+		# clear the singleton hint so it won't persist
+		ApaAja.just_started = false
 	else:
 		_close_dialog()
 		
@@ -69,8 +76,12 @@ func _input(event: InputEvent) -> void:
 	# hanya tangani tombol E saat panel tampil
 	if not kotakhitam.visible:
 		return
+		
 # tangani hanya action press dari input event (keyboard)
 	if event.is_action_pressed("Aksi"):
+		# jika kita sedang ignore press yang buka dialog, konsumsi sekali dan return
+		if _consume_ignore():
+			return
 		_handle_interact_press()
 
 # handler terpisah: dipakai oleh _input dan juga oleh UI via ApaAja.ui_interact_pressed
@@ -91,9 +102,10 @@ func _handle_interact_press() -> void:
 
 # baru: handler untuk UI "E" yang memanggil ApaAja.ui_interact()
 func _on_ui_interact_pressed() -> void:
-	print("[DialogManager] ui_interact_pressed received; kotak visible=", kotakhitam.visible, " is_typing=", is_typing)
-	# UI request hanya valid jika kotak dialog sedang ditampilkan
+	# UI interactions already come via ApaAja, so we also respect ignore flag here
 	if not kotakhitam.visible:
+		return
+	if _consume_ignore():
 		return
 	_handle_interact_press()
 
@@ -112,6 +124,23 @@ func _process(delta: float) -> void:
 			is_typing = false
 			tekskata.visible_ratio = 1.0
 			
+	# polling physical key as backup (but still respect ignore)
+	if kotakhitam.visible:
+			if _ignore_next_press:
+				# don't poll/advance until we've consumed ignore
+					  
+				return
+			if Input.is_action_just_pressed("Aksi"):
+				_handle_interact_press()
+						
+func _consume_ignore() -> bool:
+	# jika ignore aktif -> matikan dan kembalikan true (menandakan kita mengkonsumsi press)
+	if _ignore_next_press:
+		_ignore_next_press = false
+		print("[DialogManager] consumed ignore of initial press")
+		return true
+	return false
+
 func _close_dialog() -> void:
 	kotakhitam.hide()
 	tekskata.hide()
@@ -123,3 +152,4 @@ func _close_dialog() -> void:
 	time_elapsed = 0.0
 	is_typing = false
 	total_chars = 0
+	_ignore_next_press = false

@@ -9,6 +9,19 @@ signal ui_interact_pressed() # baru: dipancarkan saat tombol UI "E" ditekan keti
 var is_interacting: bool = false
 var current_npc: Node = null
 
+# Flag yang menandai interaksi baru saja dimulai (dipakai DialogManager agar tidak langsung advance)
+var just_started: bool = false
+
+# cooldown berbasis frame untuk menghindari reopen instan setelah end_interaksi
+var _cooldown_frames: int = 0
+const INTERACT_COOLDOWN_FRAMES: int = 6  # kira-kira 6 frames (~0.1s pada 60fps)
+func _ready() -> void:
+		# enable processing agar frame cooldown berjalan
+		set_process(true)
+func _process(_delta: float) -> void:
+		if _cooldown_frames > 0:
+			_cooldown_frames -= 1
+
 # dipanggil oleh Player ketika detect tekan "E" ketika di area npc
 func start_interaksi(_npc: Node):
 	print("[ApaAja] start_interaksi: ", _npc)
@@ -17,6 +30,8 @@ func start_interaksi(_npc: Node):
 		return
 	is_interacting = true
 	current_npc = _npc
+	# tandai supaya dialog manager mengabaikan press berikutnya yang sama
+	just_started = true
 	emit_signal("interaksi_changed", true, _npc)
 
 # dipanggil ketika dialog selesai (DialogManager)
@@ -26,11 +41,17 @@ func end_interaksi():
 		print("[ApaAja] end_interaksi: not interacting, ignored")
 		return
 	is_interacting = false
-	#current_npc = null
+# mulai cooldown agar press yang menutup dialog tidak langsung membuka lagi
+	_cooldown_frames = INTERACT_COOLDOWN_FRAMES
+		# jangan clear current_npc di sini; biarkan Player.set_near_npc/clear_near_npc yg mengatur
 	emit_signal("interaksi_changed", false, null)
 
 # Baru: dipanggil oleh UI Button (world.gd) untuk request interaksi dari UI
 func ui_interact():
+	# jika cooldown aktif, abaikan request
+	if _cooldown_frames > 0:
+		print("[ApaAja] ui_interact() IGNORED due to cooldown frames=", _cooldown_frames, " current_npc=", str(current_npc))
+		return
 	print("[ApaAja] ui_interact() called; is_interacting=", is_interacting, " current_npc=", str(current_npc))
 	# jika sedang interaksi -> minta dialog manager lanjut / finish
 	if is_interacting:

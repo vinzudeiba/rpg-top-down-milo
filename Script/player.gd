@@ -37,7 +37,7 @@ func _physics_process(_delta: float) -> void:
 	_handle_movement_input()
 	move_and_slide()
 
-	# tangani interaksi E: hanya jika tidak sedang interaksi global
+	 #tangani interaksi E: hanya jika tidak sedang interaksi global
 	#if Input.is_action_just_pressed("Aksi") and not ApaAja.is_interacting:
 		#print("[Player] physical Aksi just pressed; current_npc=", current_npc)
 		#if current_npc:
